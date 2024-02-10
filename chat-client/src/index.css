@@ -1,0 +1,16 @@
+body {
+  font-family: 'Noto Sans', sans-serif;
+  font-size: 18px;
+}
+
+.signin-container {
+  margin: 20vh 25vw;
+  padding: 20px;
+}
+
+.signin-container h2,
+.signin-container h4 {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+}
