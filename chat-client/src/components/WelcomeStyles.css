@@ -5,6 +5,8 @@
   margin: 15px;
   padding: 20px;
   border: 1px solid black;
+  display: flex;
+  flex-direction: column;
   /* background-color: rgb(18, 15, 20); */
   /* color: white; */
 }
@@ -20,7 +22,7 @@
 
 #individual-members {
   list-style-type: none;
-  height: 37vh;
+  height: 45vh;
   overflow-y: scroll;
 }
 

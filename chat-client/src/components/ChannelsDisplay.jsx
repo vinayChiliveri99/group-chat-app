@@ -4,7 +4,11 @@ import AddNewChannel from './AddNewChannel';
 import SearchBar from './SearchBar';
 import './WelcomeStyles.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { DeleteOutlined, LeftOutlined } from '@ant-design/icons';
+import {
+  DeleteOutlined,
+  LeftOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import {
   deleteChannel,
   fetchChannels,
@@ -14,13 +18,17 @@ import {
   currentChannel,
   setAllChannels,
 } from '../app/slices/channelSlice';
-import { message } from 'antd';
+import { Avatar, message } from 'antd';
+import LogOut from './LogOut';
 
 function ChannelsDisplay(props) {
   const { sidebar, setSidebar } = props;
   const [search, setSearch] = useState('');
 
   const dispatch = useDispatch();
+
+  const userData = JSON.parse(localStorage.getItem('userData'));
+  const userName = userData.username;
 
   useEffect(() => {
     fetchChannels().then((data) => {
@@ -86,7 +94,7 @@ function ChannelsDisplay(props) {
       </div>
       <SearchBar search={search} setSearch={setSearch} />
 
-      <div>
+      <div style={{ height: '70vh', overflowY: 'scroll' }}>
         {filteredData ? (
           filteredData.map((ele) => {
             return (
@@ -112,6 +120,28 @@ function ChannelsDisplay(props) {
         ) : (
           <></>
         )}
+      </div>
+
+      <div id="current-user">
+        <p
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
+          <span>
+            <Avatar
+              style={{
+                backgroundColor: '#87d068',
+              }}
+              icon={<UserOutlined />}
+            />
+            <span style={{ marginLeft: '10px' }}>{userName}</span>
+          </span>
+          <span>
+            <LogOut />
+          </span>
+        </p>
       </div>
     </div>
   );
