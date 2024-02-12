@@ -46,7 +46,7 @@ function ChannelsDisplay(props) {
     // dispatch(currentChannel(ele));
     let values = { id: ele.id };
     getChannelDetails(values).then((data) => {
-      console.log('current channel details are', data);
+      // console.log('current channel details are', data);
       dispatch(currentChannel(data));
     });
     setSidebar(!sidebar);

@@ -3,7 +3,7 @@ import axios from 'axios';
 const userData = sessionStorage.getItem('userData');
 const ApiToken = userData ? JSON.parse(userData).accessToken : null;
 
-console.log('token', ApiToken);
+// console.log('token', ApiToken);
 
 const baseURL = 'http://localhost:8080';
 const config = {

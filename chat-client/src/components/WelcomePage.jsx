@@ -22,10 +22,10 @@ function WelcomePage() {
     (state) => state.channels.curChannel
   );
 
-  console.log(
-    'current channel data from welcome page',
-    currentChannelData
-  );
+  // console.log(
+  //   'current channel data from welcome page',
+  //   currentChannelData
+  // );
 
   return (
     <>
