@@ -14,7 +14,7 @@ function MembersDisplay(props) {
   const { sidebar, setSidebar } = props;
   const dispatch = useDispatch();
 
-  const userData = JSON.parse(localStorage.getItem('userData'));
+  const userData = JSON.parse(sessionStorage.getItem('userData'));
   const userName = userData.username;
   // const userId = userData.id;
   // {userId === currentChannelData.groupAdmin

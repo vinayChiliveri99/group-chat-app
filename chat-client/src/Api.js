@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const userData = localStorage.getItem('userData');
+const userData = sessionStorage.getItem('userData');
 const ApiToken = userData ? JSON.parse(userData).accessToken : null;
 
 console.log('token', ApiToken);

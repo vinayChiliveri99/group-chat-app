@@ -13,7 +13,10 @@ function SignIn() {
     try {
       const response = await signIn(values);
 
-      localStorage.setItem('userData', JSON.stringify(response.data));
+      sessionStorage.setItem(
+        'userData',
+        JSON.stringify(response.data)
+      );
       // setting the user state in redux store.
       dispatch(setLogin(response.data.username));
 

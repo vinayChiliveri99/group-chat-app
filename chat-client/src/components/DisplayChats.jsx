@@ -8,7 +8,7 @@ import io from 'socket.io-client';
 
 const ENDPOINT = 'http://localhost:8080';
 let socket;
-const userData = JSON.parse(localStorage.getItem('userData'));
+const userData = JSON.parse(sessionStorage.getItem('userData'));
 
 function DisplayChats({ currentChannelData }) {
   const [message, setMessage] = useState('');

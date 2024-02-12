@@ -12,7 +12,7 @@ function WelcomePage() {
   const [sidebar, setSidebar] = useState(true);
 
   const user = useSelector((state) => state.user.user);
-  const userData = JSON.parse(localStorage.getItem('userData'));
+  const userData = JSON.parse(sessionStorage.getItem('userData'));
 
   // console.log(userData);
   const token = userData.accessToken;

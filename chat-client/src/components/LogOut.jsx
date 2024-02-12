@@ -19,7 +19,7 @@ const LogOut = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('userData');
+    sessionStorage.removeItem('userData');
     dispatch(setLogout());
     setIsModalOpen(false);
     navigate('/');
