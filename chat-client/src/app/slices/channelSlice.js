@@ -4,8 +4,8 @@ const channelSlice = createSlice({
   name: 'channels',
   initialState: {
     data: [],
-    errorMessage: null,
-    isLoading: true,
+    // errorMessage: null,
+    // isLoading: true,
     curChannel: '',
     members: [],
   },
@@ -16,12 +16,12 @@ const channelSlice = createSlice({
     addNewChannel: (state, action) => {
       state.data = [...state.data, action.payload];
     },
-    setErrorMessage: (state, action) => {
-      state.errorMessage = action.payload;
-    },
-    setLoading: (state, action) => {
-      state.isLoading = action.payload;
-    },
+    // setErrorMessage: (state, action) => {
+    //   state.errorMessage = action.payload;
+    // },
+    // setLoading: (state, action) => {
+    //   state.isLoading = action.payload;
+    // },
     currentChannel: (state, action) => {
       state.curChannel = action.payload;
     },
