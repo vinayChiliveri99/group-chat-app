@@ -1,24 +1,79 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from 'react';
-import { getAllChatsInAChannel } from '../Api';
+import { getAllChatsInAChannel, sendAMessage } from '../Api';
 import ChatCard from './ChatCard';
 import SendMessage from './SendMessage';
 import ScrollableFeed from 'react-scrollable-feed';
+import io from 'socket.io-client';
 
-// import Seperator from './Seperator';
+const ENDPOINT = 'http://localhost:8080';
+let socket;
+const userData = JSON.parse(localStorage.getItem('userData'));
 
-function DisplayChats(props) {
-  const { currentChannelData } = props;
+function DisplayChats({ currentChannelData }) {
+  const [message, setMessage] = useState('');
   const [chats, setChats] = useState([]);
+  const [selectedChatCompare, setSelectedChatCompare] =
+    useState(null);
 
-  // fetch chats from current channel and display them
   useEffect(() => {
-    const values = { channelId: currentChannelData.id };
-    getAllChatsInAChannel(values).then((data) => {
-      // data.map((ele) => console.log(ele));
-      setChats(data);
+    socket = io(ENDPOINT);
+    socket.emit('setup', userData);
+    socket.on('connection', () => {
+      console.log('Connected to socket');
     });
-  }, [currentChannelData.id]);
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.on('message received', (newMessageReceived) => {
+      // Check if the received message belongs to the currently selected chat
+      if (
+        currentChannelData &&
+        newMessageReceived.chat &&
+        currentChannelData.id === newMessageReceived.chat.channelId
+      ) {
+        setChats((prevChats) => [
+          ...prevChats,
+          newMessageReceived.chat,
+        ]);
+      }
+    });
+
+    return () => {
+      socket.off('message received');
+    };
+  }, [currentChannelData, selectedChatCompare]);
+
+  useEffect(() => {
+    if (currentChannelData && currentChannelData.id) {
+      socket.emit('join chat', currentChannelData.id);
+      setSelectedChatCompare(currentChannelData);
+      getAllChatsInAChannel({
+        channelId: currentChannelData.id,
+      }).then((data) => {
+        setChats(data);
+      });
+    }
+  }, [currentChannelData]);
+
+  const handleSubmit = () => {
+    if (message.trim() !== '') {
+      console.log('Sending message:', message);
+      let values = {
+        content: message,
+        channelId: currentChannelData.id,
+      };
+      setMessage('');
+      sendAMessage(values).then((data) => {
+        socket.emit('new message', data);
+        setChats([...chats, data.chat]);
+      });
+    }
+  };
 
   return (
     <div>
@@ -30,16 +85,11 @@ function DisplayChats(props) {
           border: '1px solid black',
           margin: '15px',
           padding: '10px',
-          // backgroundColor: 'rgb(37,35, 41)',
-          // color: 'white',
-          // color: 'rgb(130,130,130)',
         }}
       >
         <h4 style={{ position: 'relative' }}>
           {currentChannelData.name}
         </h4>
-        {/* <Seperator /> */}
-
         <ScrollableFeed>
           {chats.map((ele) => {
             return (
@@ -54,9 +104,9 @@ function DisplayChats(props) {
         </ScrollableFeed>
       </div>
       <SendMessage
-        channelId={currentChannelData.id}
-        setChats={setChats}
-        chats={chats}
+        setMessage={setMessage}
+        message={message}
+        handleSubmit={handleSubmit}
       />
     </div>
   );

@@ -1,29 +1,12 @@
-import { useState } from 'react';
+/* eslint-disable react/prop-types */
 import { Input, Button } from 'antd';
 import { SendOutlined } from '@ant-design/icons';
-import { sendAMessage } from '../Api';
 
 function SendMessage(props) {
-  // eslint-disable-next-line react/prop-types
-  const { channelId, setChats, chats } = props;
-  const [message, setMessage] = useState('');
+  const { handleSubmit, setMessage, message } = props;
 
   const handleMessageChange = (e) => {
     setMessage(e.target.value);
-  };
-
-  const handleSubmit = () => {
-    if (message.trim() !== '') {
-      console.log('Sending message:', message);
-      // Add your logic to send the message
-      let values = { content: message, channelId: channelId };
-      setMessage(''); // Clear the input field after sending
-      // api call to send message
-      sendAMessage(values).then((data) => {
-        console.log('msg sent successfully', data.chat);
-        setChats([...chats, data.chat]);
-      });
-    }
   };
 
   // eslint-disable-next-line no-unused-vars

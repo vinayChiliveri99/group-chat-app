@@ -1,47 +1,29 @@
 require('dotenv').config();
 const express = require('express');
-const bodyParser = require('body-parser');
+const http = require('http');
 const cors = require('cors');
 const db = require('./app/models');
 const { notFound } = require('./app/middlewares/notFound');
+const { Server } = require('socket.io');
 
 const app = express();
-
-var corsOptions = {
-  origin: 'http://localhost:5173',
-};
-
-app.use(cors(corsOptions));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to the application.' });
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  },
 });
 
-// creating "Welcome" channel upon server initialization
-const createWelcomeChannel = async () => {
-  try {
-    await db.sequelize.sync({ force: false });
-    const welcomeChannel = await db.channel.findOne({
-      where: { name: 'Welcome' },
-    });
+app.use(cors());
 
-    if (!welcomeChannel) {
-      await db.channel.create({
-        name: 'Welcome',
-        description:
-          'This is welcome group, a default channel for new users',
-      });
-    }
-  } catch (error) {
-    console.error('Error creating "Welcome" channel:', error);
-  }
-};
+// Middleware to parse JSON bodies
+app.use(express.json());
 
-createWelcomeChannel();
+// Middleware to parse URL-encoded bodies
+app.use(express.urlencoded({ extended: true }));
 
-// routes
+// Routes
 const authRouter = require('./app/routes/auth.routes');
 app.use('/api', authRouter);
 
@@ -51,22 +33,38 @@ app.use('/api', channelRouter);
 const chatRouter = require('./app/routes/chat.routes');
 app.use('/api', chatRouter);
 
-// for any other routes
+// Middleware for handling 404 errors
 app.use(notFound);
 
-const PORT = process.env.PORT || 8080;
+// Event listener for socket.io connections
+io.on('connection', (socket) => {
+  console.log('a user connected');
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`);
+  // Set up user's personal socket
+  socket.on('setup', (userData) => {
+    socket.join(userData.id);
+    socket.emit('connected');
+  });
+
+  // Join the chat room
+  socket.on('join chat', (roomId) => {
+    socket.join(roomId);
+    console.log('user joined the room', roomId);
+  });
+
+  // Broadcast a message to all connected clients except the sender
+  socket.on('new message', (newMessageReceived) => {
+    socket.broadcast.emit('message received', newMessageReceived);
+  });
+
+  // Event listener for disconnections
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+  });
 });
 
-// const io = require('socket.io')(server, {
-//   corsOptions,
-//   pingTimeout: 60000,
-// });
-
-// io.on('connection', (socket) => {
-//   console.log('connected to socket.io');
-// });
-
-// pending with socket.io
+// Start the server
+const PORT = process.env.PORT || 8080;
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

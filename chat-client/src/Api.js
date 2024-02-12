@@ -164,7 +164,7 @@ export const getAllChatsInAChannel = async (values) => {
       params: values,
       ...config,
     });
-    console.log('Channel details:', response.data.chats);
+    // console.log('Channel details:', response.data.chats);
     return response.data.chats;
   } catch (error) {
     console.error('Error fetching chats:', error);
